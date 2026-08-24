@@ -1,0 +1,22 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import IsolationForest
+from sklearn.metrics import classification_report
+
+url = "https://storage.googleapis.com/download.tensorflow.org/data/creditcard.csv"
+df = pd.read_csv(url)
+
+df_amostra = df.sample(n=50000, random_state=42)
+
+x = df_amostra.drop(columns=['Class'])
+y = df_amostra['Class']
+
+modelo = IsolationForest(contamination=0.002, random_state=42)
+modelo.fit(x)
+
+previsões = modelo.predict(x)
+
+previsoes_convertidas = [1 if x == -1 else 0 for x in previsões]
+
+print("Número de anomalias detectadas:")
+print(classification_report(y, previsoes_convertidas))
